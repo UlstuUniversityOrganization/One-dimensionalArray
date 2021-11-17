@@ -19,8 +19,8 @@ void TaskA(int* array, int elementsCount)
 }
 void TaskB(int* array, int elementsCount)
 {
-	int min = 999999999;
-	int max = -999999999;
+	int min = array[0];
+	int max = array[0];
 	for (int i = 0; i < elementsCount; i++)
 	{
 		if (array[i] < min) min = array[i];
@@ -33,8 +33,8 @@ void TaskB(int* array, int elementsCount)
 }
 void TaskC(int* array, int elementsCount)
 {
-	int min = 999999999;
-	int max = -999999999;
+	int min = array[0];
+	int max = array[0];
 
 	int minId = -1;
 	int maxId = -1;
@@ -59,13 +59,20 @@ void TaskC(int* array, int elementsCount)
 			printf("%d ", array[i]);
 	PrintGap();
 }
-void TaskD(int* array, int elementsCount)
-{
-	int min = 999999999;
-	int max = -999999999;
 
-	int minId = -1;
-	int maxId = -1;
+//1 element:2
+//2 element : 8
+//3 element : 4
+//4 element : 6
+//5 element : 1
+
+void TaskD(int* array, int elementsCount, int** newArray, int* newElementsCount)
+{
+	int min = array[0];
+	int max = array[0];
+
+	int minId = 0;
+	int maxId = 0;
 
 	for (int i = 0; i < elementsCount; i++)
 	{
@@ -82,11 +89,44 @@ void TaskD(int* array, int elementsCount)
 		}
 	}
 
+	*newElementsCount = 0;
 	for (int i = minId + 1; i < maxId; i++)
 		if ((array[i] % 2) != 0)
-			printf("%d ", array[i]);
-	PrintGap();
+			++* newElementsCount;
+	if (maxId >= minId)
+		*newElementsCount += elementsCount - ((maxId - 1) - minId);
+	else
+		*newElementsCount += elementsCount - ((minId - 1) - maxId);
+
+
+	*newArray = new int[*newElementsCount];
+
+	if (minId >= maxId)
+	{
+		int tempNum = minId;
+		minId = maxId;
+		maxId = tempNum;
+	}
+
+	int j = 0;
+	for (int i = 0; i < elementsCount; i++)
+	{
+		if (i > minId && i < maxId)
+		{
+			if ((array[i] % 2) != 0)
+			{
+				(*newArray)[j] = array[i];
+				j++;
+			}
+		}
+		else
+		{
+			(*newArray)[j] = array[i];
+			j++;
+		}
+	}
 }
+
 
 void CreateArray(int** array, int* elementsCount)
 {
@@ -124,7 +164,7 @@ int main(int* array, int elementsCount)
 		printf("	E. Quit the programm\n");
 
 		char answer[2];
-		
+
 		error = scanf_s("%s", answer, 2);
 		printf("\n");
 
@@ -137,13 +177,25 @@ int main(int* array, int elementsCount)
 		int* nums;
 
 		CreateArray(&nums, &elementsCount);
-		
+
 		switch (answer[0])
 		{
-			case 'A': TaskA(nums, elementsCount); break;
-			case 'B': TaskB(nums, elementsCount); break;
-			case 'C': TaskC(nums, elementsCount); break;
-			case 'D': TaskD(nums, elementsCount); break;
+		case 'A': TaskA(nums, elementsCount); break;
+		case 'B': TaskB(nums, elementsCount); break;
+		case 'C': TaskC(nums, elementsCount); break;
+		case 'D':
+		{
+			int* newArray;
+			int newElementsCount = -1;
+			TaskD(nums, elementsCount, &newArray, &newElementsCount);
+
+			printf("This is what you've got:\n");
+
+			for (int i = 0; i < newElementsCount; i++)
+				printf("%d ", newArray[i]);
+			printf("\n\n");
+			break;
+		}
 		}
 	}
 
